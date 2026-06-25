@@ -1,6 +1,6 @@
 # Localsend-Beam post-mortem
 [![Localsend-Beam post mortem
-](https://img.youtube.com/vi/0LT7jAi4_mc/maxresdefault.jpg)](https://www.youtube.com/watch?v=0LT7jAi4_mc)
+](https://img.youtube.com/vi/3EdjsWbDLWs/maxresdefault.jpg)](https://www.youtube.com/watch?v=3EdjsWbDLWs)
 
 
 **Cluster:** spiderweb | **Nodes:** M1 MacBook (control plane) · HP Stream (edge node) · Mini PC | **Latency:** 49ms post-patch | **Success Rate:** 100% post-patch | **Status:** ✅ Resolved
