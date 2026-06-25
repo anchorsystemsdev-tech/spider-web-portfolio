@@ -1,6 +1,6 @@
 # FriendNet post-mortem
 
-[![Friendnet post-moterm](https://img.youtube.com/vi/IPUwOtbVPRM/maxresdefault.jpg)](https://www.youtube.com/watch?v=IPUwOtbVPRM)
+[![Friendnet Post-Moterm](https://img.youtube.com/vi/96XJ4n2swRg/maxresdefault.jpg)](https://www.youtube.com/watch?v=96XJ4n2swRg)
 
 
 **Cluster:** spiderweb | **Nodes:** M1 MacBook (ARM64) · HP Stream (x86_64) · Mini PC (x86_64) | **Status:** ✅ Resolved
