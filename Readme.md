@@ -63,6 +63,8 @@ This public repository is the sanitized output of a private Forgejo instance, pu
 ---
  
 ## KUBE LOG — Post-Mortems
+
+[![Watch my project playlist](playlist-cover.png)](https://www.youtube.com/playlist?list=PLB26d8r7J0aFxMoEk_CLmKUPlszka4np-)
  
 Each major incident in the cluster's build history is documented as a first-person technical post-mortem with a companion video. These aren't tutorials — they're failure reports.
  
