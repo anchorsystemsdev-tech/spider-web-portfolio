@@ -1,6 +1,6 @@
-# KUBE LOG: Kubevirt Post-mortem
+# Kubevirt Post-mortem
 
-[![Kubevirt Post Mortem](https://img.youtube.com/vi/Avd3B5hTdXk/maxresdefault.jpg)](https://www.youtube.com/watch?v=Avd3B5hTdXk)
+[![Kubevirt Post Mortem](https://img.youtube.com/vi/UUwXfZgfVPQ/maxresdefault.jpg)](https://www.youtube.com/watch?v=UUwXfZgfVPQ)
 
  
 **Cluster:** spiderweb | **Nodes:** M1 MacBook (Asahi Ubuntu ARM64) + HP Stream (Xubuntu x86_64) | **Duration:** 48 hours | **Status:** ✅ Resolved
