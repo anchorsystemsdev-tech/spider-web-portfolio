@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: your-value-pv
+spec:
+  capacity:
+    storage: 108Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-path
+  local:
+    path: /your/local/path
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - hp-stream
+---
+apiVersion: v1
+kind: "REDACTED_BASE64_DATA"
+metadata:
+  name: your-value
+  namespace: your-namespace
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  volumeName: your-value-pv
+  resources:
+    requests:
+      storage: 108Gi

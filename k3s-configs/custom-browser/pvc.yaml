@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: "REDACTED_BASE64_DATA"
+metadata:
+  name: your-value
+  namespace: your-namespace
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-storage
+  resources:
+    requests:
+      storage: 5Gi

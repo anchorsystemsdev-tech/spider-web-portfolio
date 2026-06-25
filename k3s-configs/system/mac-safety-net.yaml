@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: mac-resource-limits
+spec:
+  hard:
+    # Max RAM all VMs can use (Combined)
+    requests.memory: 10Gi  
+    # Max Disk all VMs can use (Combined) - Protecting your 20GB free space
+    requests.storage: 10Gi 

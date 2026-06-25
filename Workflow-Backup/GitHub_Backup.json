@@ -1,0 +1,1291 @@
+{
+  "updatedAt": "2025-01-01T00:00:00.000Z",
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "id": "your-workflow-id-here",
+  "name": "Your Workflow Name",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 10
+            }
+          ]
+        }
+      },
+      "id": "generic-node-id-placeholder",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -16,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "repository",
+        "operation": "get",
+        "owner": "your-github-owner",
+        "repository": "your-github-repo"
+      },
+      "id": "generic-node-id-placeholder",
+      "name": "Check GitHub Repo",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [
+        208,
+        352
+      ],
+      "webhookId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+      "credentials": {
+        "githubApi": {
+          "id": "your-credential-id",
+          "name": "Your Header Auth Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.id }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "generic-node-id-placeholder",
+      "name": "IF",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        432,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://your-host:1234/api/v1/your-endpoint",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+      "name": "Get All Workflows",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        656,
+        352
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "your-credential-id",
+          "name": "Your Header Auth Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "id": "generic-node-id-placeholder",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        880,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const yourData = $input.item.json.body;\nreturn {\n  json: yourData\n};"
+      },
+      "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+      "name": "Filter Active Workflows",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1104,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const yourData = $input.item.json.body;\nreturn {\n  json: yourData\n};"
+      },
+      "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+      "name": "Version Manager",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1328,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://your-host:1234/api/v1/your-endpoint",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "options": {}
+      },
+      "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+      "name": "Get Main SHA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1552,
+        352
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "your-credential-id",
+          "name": "Your Header Auth Account"
+        },
+        "githubApi": {
+          "id": "your-credential-id",
+          "name": "Your Header Auth Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://your-host:1234/api/v1/your-endpoint",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "ref",
+              "value": "={{ 'refs/heads/' + $('Version Manager').item.json.version_tag }}"
+            },
+            {
+              "name": "sha",
+              "value": "={{ $json.object.sha }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+      "name": "Create Version Branch",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1776,
+        352
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "your-credential-id",
+          "name": "Your Header Auth Account"
+        },
+        "githubApi": {
+          "id": "your-credential-id",
+          "name": "Your Header Auth Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "generic-node-id-placeholder",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2224,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze this n8n workflow JSON and create a README.md file.\n\n   Workflow JSON:\n   {{ JSON.stringify($json, null, 2) }}\n\n   Create a README that includes:\n   1. # Workflow Name (use the workflow's actual name)\n   2. ## Description - what this workflow does\n   3. ## Nodes Used - list all node types\n   4. ## Required Credentials - what credentials are needed\n   5. ## How to Use - setup and usage instructions\n   6. ## Workflow Structure - explain the flow\n\n   Return ONLY the markdown content, no preamble.",
+        "options": {}
+      },
+      "id": "generic-node-id-placeholder",
+      "name": "AI Agent1",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2448,
+        224
+      ],
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "owner": "your-github-owner",
+        "repository": "your-github-repo",
+        "filePath": "=workflows/{{ $('Version Manager').item.json.version_tag }}/{{ $('Loop Over Items').item.json.name.replace(/[^a-zA-Z0-9-_]/g, '_') }}.json",
+        "fileContent": "={{ JSON.stringify($('Loop Over Items').item.json, null, 2) }}",
+        "commitMessage": "={{ $('Version Manager').item.json.commit_msg }}"
+      },
+      "id": "generic-node-id-placeholder",
+      "name": "Commit Workflow JSON ",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [
+        2800,
+        224
+      ],
+      "webhookId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+      "credentials": {
+        "githubApi": {
+          "id": "your-credential-id",
+          "name": "Your Header Auth Account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "owner": "your-github-owner",
+        "repository": "your-github-repo",
+        "filePath": "=workflows/{{ $('Version Manager').item.json.version_tag }}/{{ $('Loop Over Items').item.json.name.replace(/[^a-zA-Z0-9-_]/g, '_') }}.md",
+        "fileContent": "= {{ $('AI Agent1').item.json.output }}",
+        "commitMessage": "=README for {{ $('Loop Over Items').item.json.name }} ({{ $('Version Manager').item.json.version_tag }})"
+      },
+      "id": "generic-node-id-placeholder",
+      "name": "Commit README",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [
+        3024,
+        352
+      ],
+      "webhookId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+      "credentials": {
+        "githubApi": {
+          "id": "your-credential-id",
+          "name": "Your Header Auth Account"
+        }
+      },
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3-flash-preview",
+        "options": {}
+      },
+      "id": "generic-node-id-placeholder",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2464,
+        448
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "your-credential-id",
+          "name": "Your Header Auth Account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "=={{ $json.name }}"
+      },
+      "id": "generic-node-id-placeholder",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2592,
+        448
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "id": "generic-node-id-placeholder",
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -16,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const yourData = $input.item.json.body;\nreturn {\n  json: yourData\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        352
+      ],
+      "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+      "name": "Unpack workflows"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "your-subworkflow-id-here",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/your-subworkflow-id-here",
+          "cachedResultName": "Localsend-Beam"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ip": "your-ip",
+            "workflow_name": "={{ $node[\"Filter Active Workflows\"].json.name }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ip",
+              "displayName": "ip",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "workflow_name",
+              "displayName": "workflow_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        3456,
+        304
+      ],
+      "id": "generic-node-id-placeholder",
+      "name": "Call 'Localsend-Beam'"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3280,
+        624
+      ],
+      "id": "generic-node-id-placeholder",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "options": {
+          "fileName": "={{ $node[\"Filter Active Workflows\"].json.name }}.json"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        3280,
+        336
+      ],
+      "id": "generic-node-id-placeholder",
+      "name": "Convert to File"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Check GitHub Repo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check GitHub Repo": {
+      "main": [
+        [
+          {
+            "node": "IF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF": {
+      "main": [
+        [
+          {
+            "node": "Get All Workflows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Workflows": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Filter Active Workflows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Active Workflows": {
+      "main": [
+        [
+          {
+            "node": "Version Manager",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Version Manager": {
+      "main": [
+        [
+          {
+            "node": "Get Main SHA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Main SHA": {
+      "main": [
+        [
+          {
+            "node": "Create Version Branch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Version Branch": {
+      "main": [
+        [
+          {
+            "node": "Unpack workflows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        null,
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Commit Workflow JSON ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Commit Workflow JSON ": {
+      "main": [
+        [
+          {
+            "node": "Commit README",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Commit README": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Check GitHub Repo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unpack workflows": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Call 'Localsend-Beam'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner",
+    "authors": "Your Name",
+    "name": "Version your-version-id"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+  "activeVersionId": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-01-01T00:00:00.000Z",
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "role": "workflow:owner",
+      "workflowId": "your-workflow-id-here",
+      "projectId": "your-project-id-here"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-01-01T00:00:00.000Z",
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "versionId": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+    "workflowId": "your-workflow-id-here",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "triggerAtHour": 10
+              }
+            ]          }
+        },
+        "id": "generic-node-id-placeholder",
+        "name": "Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -16,
+          256
+        ]
+      },
+      {
+        "parameters": {
+          "resource": "repository",
+          "operation": "get",
+          "owner": "your-github-owner",
+          "repository": "your-github-repo"
+        },
+        "id": "generic-node-id-placeholder",
+        "name": "Check GitHub Repo",
+        "type": "n8n-nodes-base.github",
+        "typeVersion": 1,
+        "position": [
+          208,
+          352
+        ],
+        "webhookId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+        "credentials": {
+          "githubApi": {
+            "id": "your-credential-id",
+            "name": "Your Header Auth Account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "string": [
+              {
+                "value1": "={{ $json.id }}",
+                "operation": "isNotEmpty"
+              }
+            ]
+          }
+        },
+        "id": "generic-node-id-placeholder",
+        "name": "IF",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1,
+        "position": [
+          432,
+          352
+        ]
+      },
+      {
+        "parameters": {
+          "url": "http://your-host:1234/api/v1/your-endpoint",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "options": {}
+        },
+        "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+        "name": "Get All Workflows",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          656,
+          352
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "your-credential-id",
+            "name": "Your Header Auth Account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "data",
+          "options": {}
+        },
+        "id": "generic-node-id-placeholder",
+        "name": "Split Out",
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          880,
+          352
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const yourData = $input.item.json.body;\nreturn {\n  json: yourData\n};"
+        },
+        "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+        "name": "Filter Active Workflows",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1104,
+          352
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const yourData = $input.item.json.body;\nreturn {\n  json: yourData\n};"
+        },
+        "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+        "name": "Version Manager",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1328,
+          352
+        ]
+      },
+      {
+        "parameters": {
+          "url": "http://your-host:1234/api/v1/your-endpoint",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "githubApi",
+          "options": {}
+        },
+        "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+        "name": "Get Main SHA",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          1552,
+          352
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "your-credential-id",
+            "name": "Your Header Auth Account"
+          },
+          "githubApi": {
+            "id": "your-credential-id",
+            "name": "Your Header Auth Account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://your-host:1234/api/v1/your-endpoint",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "githubApi",
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "ref",
+                "value": "={{ 'refs/heads/' + $('Version Manager').item.json.version_tag }}"
+              },
+              {
+                "name": "sha",
+                "value": "={{ $json.object.sha }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+        "name": "Create Version Branch",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          1776,
+          352
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "your-credential-id",
+            "name": "Your Header Auth Account"
+          },
+          "githubApi": {
+            "id": "your-credential-id",
+            "name": "Your Header Auth Account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "id": "generic-node-id-placeholder",
+        "name": "Loop Over Items",
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          2224,
+          352
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Analyze this n8n workflow JSON and create a README.md file.\n\n   Workflow JSON:\n   {{ JSON.stringify($json, null, 2) }}\n\n   Create a README that includes:\n   1. # Workflow Name (use the workflow's actual name)\n   2. ## Description - what this workflow does\n   3. ## Nodes Used - list all node types\n   4. ## Required Credentials - what credentials are needed\n   5. ## How to Use - setup and usage instructions\n   6. ## Workflow Structure - explain the flow\n\n   Return ONLY the markdown content, no preamble.",
+          "options": {}
+        },
+        "id": "generic-node-id-placeholder",
+        "name": "AI Agent1",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          2448,
+          224
+        ],
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "resource": "file",
+          "owner": "your-github-owner",
+          "repository": "your-github-repo",
+          "filePath": "=workflows/{{ $('Version Manager').item.json.version_tag }}/{{ $('Loop Over Items').item.json.name.replace(/[^a-zA-Z0-9-_]/g, '_') }}.json",
+          "fileContent": "={{ JSON.stringify($('Loop Over Items').item.json, null, 2) }}",
+          "commitMessage": "={{ $('Version Manager').item.json.commit_msg }}"
+        },
+        "id": "generic-node-id-placeholder",
+        "name": "Commit Workflow JSON ",
+        "type": "n8n-nodes-base.github",
+        "typeVersion": 1,
+        "position": [
+          2800,
+          224
+        ],
+        "webhookId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+        "credentials": {
+          "githubApi": {
+            "id": "your-credential-id",
+            "name": "Your Header Auth Account"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "resource": "file",
+          "owner": "your-github-owner",
+          "repository": "your-github-repo",
+          "filePath": "=workflows/{{ $('Version Manager').item.json.version_tag }}/{{ $('Loop Over Items').item.json.name.replace(/[^a-zA-Z0-9-_]/g, '_') }}.md",
+          "fileContent": "= {{ $('AI Agent1').item.json.output }}",
+          "commitMessage": "=README for {{ $('Loop Over Items').item.json.name }} ({{ $('Version Manager').item.json.version_tag }})"
+        },
+        "id": "generic-node-id-placeholder",
+        "name": "Commit README",
+        "type": "n8n-nodes-base.github",
+        "typeVersion": 1,
+        "position": [
+          3024,
+          352
+        ],
+        "webhookId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+        "credentials": {
+          "githubApi": {
+            "id": "your-credential-id",
+            "name": "Your Header Auth Account"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "id": "generic-node-id-placeholder",
+        "name": "Google Gemini Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "typeVersion": 1,
+        "position": [
+          2464,
+          448
+        ],
+        "credentials": {
+          "googlePalmApi": {
+            "id": "your-credential-id",
+            "name": "Your Header Auth Account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "=={{ $json.name }}"
+        },
+        "id": "generic-node-id-placeholder",
+        "name": "Simple Memory",
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          2592,
+          448
+        ]
+      },
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "id": "generic-node-id-placeholder",
+        "name": "When Executed by Another Workflow",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -16,
+          448
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const yourData = $input.item.json.body;\nreturn {\n  json: yourData\n};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2000,
+          352
+        ],
+        "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+        "name": "Unpack workflows"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "your-subworkflow-id-here",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/your-subworkflow-id-here",
+            "cachedResultName": "Localsend-Beam"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "ip": "your-ip",
+              "workflow_name": "={{ $node[\"Filter Active Workflows\"].json.name }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "ip",
+                "displayName": "ip",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "workflow_name",
+                "displayName": "workflow_name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "mode": "each",
+          "options": {
+            "waitForSubWorkflow": true
+          }
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "position": [
+          3456,
+          304
+        ],
+        "id": "generic-node-id-placeholder",
+        "name": "Call 'Localsend-Beam'"
+      },
+      {
+        "parameters": {
+          "operation": "toJson",
+          "mode": "each",
+          "options": {
+            "fileName": "={{ $node[\"Filter Active Workflows\"].json.name }}.json"
+          }
+        },
+        "type": "n8n-nodes-base.convertToFile",
+        "typeVersion": 1.1,
+        "position": [
+          3232,
+          352
+        ],
+        "id": "generic-node-id-placeholder",
+        "name": "Convert to File"
+      }
+    ],
+    "connections": {
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Check GitHub Repo",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check GitHub Repo": {
+        "main": [
+          [
+            {
+              "node": "IF",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "IF": {
+        "main": [
+          [
+            {
+              "node": "Get All Workflows",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get All Workflows": {
+        "main": [
+          [
+            {
+              "node": "Split Out",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out": {
+        "main": [
+          [
+            {
+              "node": "Filter Active Workflows",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter Active Workflows": {
+        "main": [
+          [
+            {
+              "node": "Version Manager",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Version Manager": {
+        "main": [
+          [
+            {
+              "node": "Get Main SHA",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Main SHA": {
+        "main": [
+          [
+            {
+              "node": "Create Version Branch",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create Version Branch": {
+        "main": [
+          [
+            {
+              "node": "Unpack workflows",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          null,
+          [
+            {
+              "node": "AI Agent1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent1": {
+        "main": [
+          [
+            {
+              "node": "Commit Workflow JSON ",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Commit Workflow JSON ": {
+        "main": [
+          [
+            {
+              "node": "Commit README",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Commit README": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Convert to File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Gemini Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent1",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent1",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Check GitHub Repo",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Unpack workflows": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Convert to File": {
+        "main": [
+          [
+            {
+              "node": "Call 'Localsend-Beam'",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Your Name",
+    "name": "Version your-version-id",
+    "description": "",
+    "autosaved": false
+  },
+  "tags": []
+}

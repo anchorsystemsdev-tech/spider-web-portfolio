@@ -1,0 +1,104 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: fedora-desktop
+spec:
+  runStrategy: Always
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: fedora-desktop
+    spec:
+      domain:
+        machine:
+          type: virt
+        cpu:
+          model: host-passthrough
+          cores: 4
+        resources:
+          requests:
+            memory: 4Gi
+            cpu: "2"
+          limits:
+            memory: 4Gi
+            cpu: "4"
+        features:
+          acpi: {}
+          smm:
+            enabled: false
+        devices:
+          autoattachGraphicsDevice: true
+          video:
+            type: virtio
+          inputs:
+          - type: tablet
+            bus: virtio
+            name: your-value
+          disks:
+          - disk: {bus: virtio}
+            name: your-value
+          - disk: {bus: virtio}
+            name: your-value
+          interfaces:
+          - name: your-value
+            masquerade: {}
+      networks:
+      - name: your-value
+        pod: {}
+      volumes:
+      - name: datavolume
+        dataVolume:
+          name: fedora-desktop-dv
+      - name: your-value
+        cloudInitNoCloud:
+          userData: |-
+            #cloud-config
+            user: your-value
+            password: "REDACTED_SECRET"
+            chpasswd: { expire: False }
+            ssh_pwauth: True
+            runcmd:
+              # 1. Force Hostname first to prevent the 'Local Stage' crash
+              - sudo hostnamectl set-hostname fedora-desktop
+              # 2. Use full paths + sudo for Fedora 43 compatibility
+              - sudo /usr/bin/dnf groupinstall -y "Xfce Desktop"
+              - sudo /usr/bin/dnf install -y lightdm python3-redis
+              # 3. Setup Auto-Login
+              - sudo mkdir -p /etc/lightdm/lightdm.conf.d
+              - |
+                sudo bash -c "cat << EOF > /etc/lightdm/lightdm.conf.d/autologin.conf
+                [Seat:*]
+                user-session=xfce
+                autologin-user=fedora
+                autologin-user-timeout=0
+                EOF"
+              # 4. Final kickstart
+              - sudo systemctl set-default graphical.target
+              - sudo systemctl enable --now lightdm
+              # 5. Redis Script Creation
+              - |
+                cat << 'EOF' > /your/local-path/test-float.py
+                import redis, socket, time
+                r = redis.Redis(host='redis-service', port=1234, decode_responses=True)
+                while True:
+                    try: r.set(f"heartbeat:{socket.gethostname()}", "Active", ex=120)
+                    except: pass
+                    time.sleep(60)
+                EOF
+              - sudo chown fedora:fedora /your/local-path/test-float.py
+              - nohup python3 /home/fedora/test-float.py > /your/local-path/heartbeat.log 2>&1 &
+  dataVolumeTemplates:
+  - metadata:
+      name: fedora-desktop-dv
+      annotations:
+        cdi.kubevirt.io/storage.import.preallocation: "false"
+    spec:
+      storage:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 8Gi
+        storageClassName: local-path
+      source:
+        http:
+          url: "https://mirror.cs.odu.edu/fedora/linux/releases/43/Cloud/aarch64/images/Fedora-Cloud-Base-Generic-43-1.6.aarch64.qcow2"

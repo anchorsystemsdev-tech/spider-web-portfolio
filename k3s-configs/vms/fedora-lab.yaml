@@ -1,0 +1,70 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: fedora-lab
+spec:
+  runStrategy: Always
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: fedora-lab
+    spec:
+      domain:
+        machine:
+          type: virt
+        cpu:
+          # NATIVE PERFORMANCE: Use the M1 Pro cores directly
+          model: host-passthrough
+          cores: 4
+        resources:
+          requests:
+            memory: 4Gi
+            cpu: "2"
+          limits:
+            memory: 4Gi
+            cpu: "4"
+        features:
+          smm:
+            enabled: false
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: your-value
+          - disk:
+              bus: virtio
+            name: your-value
+          interfaces:
+          - name: your-value
+            masquerade: {}
+      networks:
+      - name: your-value
+        pod: {}
+      volumes:
+      - name: datavolume
+        dataVolume:
+          name: fedora-dv
+      - name: your-value
+        cloudInitNoCloud:
+          userData: |-
+            #cloud-config
+            user: your-value
+            password: "REDACTED_SECRET"
+            chpasswd: { expire: False }
+            ssh_pwauth: True
+  dataVolumeTemplates:
+  - metadata:
+      name: your-value
+    spec:
+      storage:
+        accessModes:
+        - ReadWriteOnce
+        volumeMode: Filesystem
+        resources:
+          requests:
+            storage: 8Gi
+        storageClassName: local-path
+      source:
+        http:
+          # VERIFIED DIRECT MIRROR (Fedora 43 - 16K Page Compatible)
+          url: "https://mirror.cs.odu.edu/fedora/linux/releases/43/Cloud/aarch64/images/Fedora-Cloud-Base-Generic-43-1.6.aarch64.qcow2"

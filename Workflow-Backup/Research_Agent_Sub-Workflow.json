@@ -1,0 +1,738 @@
+{
+  "updatedAt": "2025-01-01T00:00:00.000Z",
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "id": "your-workflow-id-here",
+  "name": "Your Workflow Name",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a research synthesis agent. Read the provided web content and create a structured summary.\n\nFormat:\n# [Topic] Summary\n\n## Key Points\n- [3-5 main insights]\n\n## Details\n[2-3 paragraphs with headers]\n\n## Action Items\n[What to do with this info]\n\nKeep it concise (400-600 words). Remove any navigation/ads. Note conflicts but don't invent info."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        2032,
+        288
+      ],
+      "id": "generic-node-id-placeholder",
+      "name": "Summarizer / Synthesizer"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1088,
+        192
+      ],
+      "id": "generic-node-id-placeholder",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1312,
+        288
+      ],
+      "id": "generic-node-id-placeholder",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "url": "http://your-host:1234/api/v1/your-endpoint",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1312,
+        96
+      ],
+      "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "text",
+              "cssSelector": "article, .article-content, .post-content, main"
+            }
+          ]
+        },
+        "options": {
+          "cleanUpText": true
+        }
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        1536,
+        96
+      ],
+      "id": "generic-node-id-placeholder",
+      "name": "HTML"
+    },
+    {
+      "parameters": {
+        "model": "qwen2.5:3b",
+        "options": {
+          "keepAlive": "0",
+          "numCtx": 4096
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        1968,
+        512
+      ],
+      "id": "generic-node-id-placeholder",
+      "name": "Mistral Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "your-credential-id",
+          "name": "Your Header Auth Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "q": "={{ $json.query }}",
+        "additionalFields": {
+          "num": "10"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-serpapi.serpApi",
+      "typeVersion": 1,
+      "position": [
+        432,
+        192
+      ],
+      "id": "generic-node-id-placeholder",
+      "name": "Google search",
+      "credentials": {
+        "serpApi": {
+          "id": "your-credential-id",
+          "name": "Your Header Auth Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const yourData = $input.item.json.body;\nreturn {\n  json: yourData\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        192
+      ],
+      "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+      "name": "URL Extractor "
+    },
+    {
+      "parameters": {
+        "jsCode": "const yourData = $input.item.json.body;\nreturn {\n  json: yourData\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        864,
+        192
+      ],
+      "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+      "name": "Domain filter"
+    },
+    {
+      "parameters": {
+        "jsCode": "const yourData = $input.item.json.body;\nreturn {\n  json: yourData\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1744,
+        96
+      ],
+      "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+      "name": "Noise Remover"
+    },
+    {
+      "parameters": {
+        "jsCode": "const yourData = $input.item.json.body;\nreturn {\n  json: yourData\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1744,
+        288
+      ],
+      "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+      "name": "Formatter"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "query"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        192
+      ],
+      "id": "generic-node-id-placeholder",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "connections": {
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Formatter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML": {
+      "main": [
+        [
+          {
+            "node": "Noise Remover",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Summarizer / Synthesizer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google search": {
+      "main": [
+        [
+          {
+            "node": "URL Extractor ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarizer / Synthesizer": {
+      "main": [
+        []
+      ]
+    },
+    "URL Extractor ": {
+      "main": [
+        [
+          {
+            "node": "Domain filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Domain filter": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Noise Remover": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatter": {
+      "main": [
+        [
+          {
+            "node": "Summarizer / Synthesizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Google search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "your-workflow-id-here",
+    "authors": "Your Name",
+    "name": "Version your-version-id"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "query": "your-search-query"
+        }
+      }
+    ]
+  },
+  "versionId": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+  "activeVersionId": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-01-01T00:00:00.000Z",
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "role": "workflow:owner",
+      "workflowId": "your-workflow-id-here",
+      "projectId": "your-project-id-here"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-01-01T00:00:00.000Z",
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "versionId": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+    "workflowId": "your-workflow-id-here",
+    "nodes": [
+      {
+        "parameters": {
+          "options": {
+            "systemMessage": "You are a research synthesis agent. Read the provided web content and create a structured summary.\n\nFormat:\n# [Topic] Summary\n\n## Key Points\n- [3-5 main insights]\n\n## Details\n[2-3 paragraphs with headers]\n\n## Action Items\n[What to do with this info]\n\nKeep it concise (400-600 words). Remove any navigation/ads. Note conflicts but don't invent info."
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3,
+        "position": [
+          2032,
+          288
+        ],
+        "id": "generic-node-id-placeholder",
+        "name": "Summarizer / Synthesizer"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          1088,
+          192
+        ],
+        "id": "generic-node-id-placeholder",
+        "name": "Loop Over Items"
+      },
+      {
+        "parameters": {
+          "aggregate": "aggregateAllItemData",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          1312,
+          288
+        ],
+        "id": "generic-node-id-placeholder",
+        "name": "Aggregate"
+      },
+      {
+        "parameters": {
+          "url": "={{ $json.link }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          1312,
+          96
+        ],
+        "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+        "name": "HTTP Request1"
+      },
+      {
+        "parameters": {
+          "operation": "extractHtmlContent",
+          "extractionValues": {
+            "values": [
+              {
+                "key": "text",
+                "cssSelector": "article, .article-content, .post-content, main"
+              }
+            ]
+          },
+          "options": {
+            "cleanUpText": true
+          }
+        },
+        "type": "n8n-nodes-base.html",
+        "typeVersion": 1.2,
+        "position": [
+          1536,
+          96
+        ],
+        "id": "generic-node-id-placeholder",
+        "name": "HTML"
+      },
+      {
+        "parameters": {
+          "model": "qwen2.5:3b",
+          "options": {
+            "keepAlive": "0",
+            "numCtx": 4096
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+        "typeVersion": 1,
+        "position": [
+          1968,
+          512
+        ],
+        "id": "generic-node-id-placeholder",
+        "name": "Mistral Model",
+        "credentials": {
+          "ollamaApi": {
+            "id": "your-credential-id",
+            "name": "Your Header Auth Account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "q": "={{ $json.query }}",
+          "additionalFields": {
+            "num": "10"
+          },
+          "requestOptions": {}
+        },
+        "type": "n8n-nodes-serpapi.serpApi",
+        "typeVersion": 1,
+        "position": [
+          432,
+          192
+        ],
+        "id": "generic-node-id-placeholder",
+        "name": "Google search",
+        "credentials": {
+          "serpApi": {
+            "id": "your-credential-id",
+            "name": "Your Header Auth Account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const results = $input.first().json.organic_results || [];\n\nreturn results.map(result => ({\n  json: {\n    link: result.link,\n    title: result.title\n  }\n}));"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          656,
+          192
+        ],
+        "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+        "name": "URL Extractor "
+      },
+      {
+        "parameters": {
+          "jsCode": "const results = $input.all();\nconst blockedDomains = ['medium.com', 'reddit.com', 'quora.com', 'wsj.com', 'cnn.com'];\n\nconst filtered = results.filter(item => {\n  const url = item.json.link || '';\n  const isBlocked = blockedDomains.some(domain => url.includes(domain));\n  return !isBlocked;\n});\n\nreturn filtered;"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          864,
+          192
+        ],
+        "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+        "name": "Domain filter"
+      },
+      {
+        "parameters": {
+          "jsCode": "const input = $input.all();\n\nreturn input.map(item => {\n  let text = item.json.text || '';\n  \n  // Remove common noise patterns\n  text = text\n    .replace(/\\[https?:\\/\\/[^\\]]+\\]/g, '') // Remove markdown links\n    .replace(/Image Source:.*/g, '') // Remove image credits\n    .replace(/SHARE TO.*/g, '') // Remove social buttons\n    .replace(/\\n{3,}/g, '\\n\\n') // Collapse multiple newlines\n    .replace(/^\\s*[\\*\\-]\\s+/gm, '') // Remove bullet points\n    .trim();\n  \n  return {\n    json: {\n      text: text,\n      source: item.json.source || 'unknown'\n    }\n  };\n});"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1744,
+          96
+        ],
+        "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+        "name": "Noise Remover"
+      },
+      {
+        "parameters": {
+          "jsCode": "const items = $input.all();\n\nconst allText = items\n  .flatMap(item => {\n    if (Array.isArray(item.json.data)) {\n      return item.json.data.map(d => d.text || '');\n    }\n    return item.json.text || '';\n  })\n  .filter(Boolean)\n  .join('\\n\\n')\n  .slice(0, 2000); // VERY aggressive - ~500 tokens\n\nreturn [{\n  json: {\n    chatInput: allText\n  }\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1744,
+          288
+        ],
+        "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+        "name": "Formatter"
+      },
+      {
+        "parameters": {
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "query"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          0,
+          192
+        ],
+        "id": "generic-node-id-placeholder",
+        "name": "When Executed by Another Workflow"
+      }
+    ],
+    "connections": {
+      "Loop Over Items": {
+        "main": [
+          [
+            {
+              "node": "Aggregate",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "HTTP Request1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate": {
+        "main": [
+          [
+            {
+              "node": "Formatter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request1": {
+        "main": [
+          [
+            {
+              "node": "HTML",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTML": {
+        "main": [
+          [
+            {
+              "node": "Noise Remover",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Mistral Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Summarizer / Synthesizer",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google search": {
+        "main": [
+          [
+            {
+              "node": "URL Extractor ",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Summarizer / Synthesizer": {
+        "main": [
+          []
+        ]
+      },
+      "URL Extractor ": {
+        "main": [
+          [
+            {
+              "node": "Domain filter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Domain filter": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Noise Remover": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Formatter": {
+        "main": [
+          [
+            {
+              "node": "Summarizer / Synthesizer",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Google search",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Your Name",
+    "name": "Version your-version-id",
+    "description": "",
+    "autosaved": false
+  },
+  "tags": []
+}

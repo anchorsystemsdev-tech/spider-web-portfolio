@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stremio-server
+  namespace: your-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stremio-server
+  template:
+    metadata:
+      labels:
+        app: stremio-server
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: your-hostname # Pin to the Mac for heavy video transcoding
+      containers:
+      - name: stremio-server
+        image: your-registry/your-image:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 1234
+        env:
+        - name: NO_CORS
+          value: "1" # CRITICAL: Allows your stremio-web frontend to talk to this backend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stremio-server-service
+  namespace: your-namespace
+spec:
+  type: NodePort
+  selector:
+    app: stremio-server
+  ports:
+    - port: 1234
+      targetPort: 1234
+      nodePort: 1234 

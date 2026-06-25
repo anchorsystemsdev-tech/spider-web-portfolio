@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: open-notebook
+  namespace: your-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: open-notebook
+  template:
+    metadata:
+      labels:
+        app: open-notebook
+    spec:
+      hostNetwork: true  # Pod bypasses K3s virtual network and uses host IP
+      nodeSelector:
+        node-role: your-value
+      containers:
+      - name: open-notebook
+        image: your-registry/your-image:latest
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        ports:
+        - containerPort: 1234
+        - containerPort: 7890
+        env:
+        - name: API_URL
+          value: "your-value"
+        - name: SURREAL_URL
+          value: "ws://your.domain.local:your-value/rpc"
+        - name: SURREAL_NAMESPACE
+          value: "your-value"
+        - name: SURREAL_DATABASE
+          value: "your-value"
+        - name: OPEN_NOTEBOOK_ENCRYPTION_KEY
+          value: "your-value"
+        - name: OLLAMA_TIMEOUT
+        value: "your-value"
+        - name: EMBEDDING_CONTEXT_LENGTH
+          value: "your-value"
+        # --- SECURE CREDENTIAL INJECTION ---
+        - name: SURREAL_USER
+          valueFrom:
+            secretKeyRef:
+              name: your-value
+              key: your-value
+        - name: SURREAL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: your-value
+              key: your-value

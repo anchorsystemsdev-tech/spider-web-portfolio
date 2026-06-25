@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: friendnet-server
+  namespace: your-namespace
+  labels:
+    app: friendnet-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: friendnet-server
+  template:
+    metadata:
+      labels:
+        app: friendnet-server
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: your-hostname # Pins the server to your x86 worker node
+      hostNetwork: true # Replicates 'network_mode: host' from the compose file
+      containers:
+      - name: server
+        image: your-registry/your-image:latest
+        volumeMounts:
+        - name: config-vol
+          mountPath: /your/local/path
+        - name: data-vol
+          mountPath: /your/local/path
+      volumes:
+      - name: config-vol
+        hostPath:
+          path: /your/local/path
+          type: DirectoryOrCreate
+      - name: data-vol
+        hostPath:
+          path: /your/local/path
+          type: DirectoryOrCreate

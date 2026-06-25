@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ani-web-prod
+  namespace: your-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ani-web-prod
+  template:
+    metadata:
+      labels:
+        app: ani-web-prod
+    spec:
+      nodeSelector:
+        lane: powerhouse # Pins it to M1
+      containers:
+      - name: ani-web
+        # Point this to your local Forgejo registry
+        image: your-registry/your-image:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        volumeMounts:
+        - name:  data-volume
+          mountPath: /your/local/path/ani-web 
+      volumes:
+      - name:  data-volume
+        hostPath:
+          path: /your/local/path
+          type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ani-web-service
+  namespace: your-namespace
+spec:
+  type: NodePort
+  selector:
+    app: ani-web-prod
+  ports:
+    - port: 1234
+      targetPort: 1234
+      nodePort: 31234

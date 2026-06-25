@@ -1,0 +1,296 @@
+{
+  "updatedAt": "2025-01-01T00:00:00.000Z",
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "id": "your-workflow-id-here",
+  "name": "Your Workflow Name",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "your-webhook-path",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "name": "Webhook",
+      "webhookId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+    },
+    {
+      "parameters": {
+        "jsCode": "const yourData = $input.item.json.body;\nreturn {\n  json: yourData\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "http://your-host:1234/api/v1/your-endpoint",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { name: $json.name, nodes: $json.nodes, connections: $json.connections, settings: $json.settings } }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        448,
+        0
+      ],
+      "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "your-credential-id",
+          "name": "Your Header Auth Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        672,
+        0
+      ],
+      "id": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "your-subworkflow-id-here",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        880,
+        0
+      ],
+      "id": "generic-node-id-placeholder",
+      "name": "Call 'GitHub Backup'"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "Call 'GitHub Backup'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner",
+    "authors": "Your Name",
+    "name": "Version your-version-id"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+  "activeVersionId": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-01-01T00:00:00.000Z",
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "role": "workflow:owner",
+      "workflowId": "your-workflow-id-here",
+      "projectId": "your-project-id-here"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-01-01T00:00:00.000Z",
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "versionId": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+    "workflowId": "your-workflow-id-here",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "your-webhook-path-v2",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+        "name": "Webhook",
+        "webhookId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+      },
+      {
+        "parameters": {
+          "jsCode": "const data = $input.first().json.body;\nconst workflowId = data.id;\n\n// Remove read-only fields\ndelete data.id;\ndelete data.active;\ndelete data.createdAt;\ndelete data.updatedAt;\ndelete data.versionId;\ndelete data.meta;\ndelete data.pinData;\ndelete data.staticData;\n\n// Ensure settings exists (required field)\nif (!data.settings) {\n  data.settings = {\n    executionOrder: \"v1\"\n  };\n}\n\nreturn {\n  json: {\n    id: workflowId,\n    ...data\n  }\n};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          224,
+          0
+        ],
+        "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+        "name": "Code in JavaScript"
+      },
+      {
+        "parameters": {
+          "method": "PUT",
+          "url": "=http://your-host:1234/api/v1/workflows/{{ $json.id }}",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ { name: $json.name, nodes: $json.nodes, connections: $json.connections, settings: $json.settings } }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          448,
+          0
+        ],
+        "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+        "name": "HTTP Request",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "your-credential-id",
+            "name": "Your Header Auth Account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ $json }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          672,
+          0
+        ],
+        "id": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+        "name": "Respond to Webhook"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+                }
+              ]
+            ]
+          },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Your Name",
+    "name": "Version your-version-id",
+    "description": "",
+    "autosaved": false
+  },
+  "tags": []
+}

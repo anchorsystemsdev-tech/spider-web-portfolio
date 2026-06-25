@@ -1,0 +1,98 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-grid
+  namespace: your-namespace
+  labels:
+    app: redis-grid
+spec:
+  ports:
+  - port: 1234
+    name: redis
+  clusterIP: None
+  selector:
+    app: redis-grid
+---
+# LANE 1: THE MAC (2GB)
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis-powerhouse
+  namespace: your-namespace
+spec:
+  serviceName: "redis-grid"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-grid
+      lane: powerhouse
+  template:
+    metadata:
+      labels:
+        app: redis-grid
+        lane: powerhouse
+    spec:
+      nodeSelector:
+        lane: your-value
+      containers:
+      - name: redis
+        image: your-registry/your-image:latest
+        resources:
+          limits: { memory: "2Gi" }
+        ports: [ { containerPort: 1234 } ]
+---
+# LANE 2: THE MINI PC (1GB)
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis-medium
+  namespace: your-namespace
+spec:
+  serviceName: "redis-grid"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-grid
+      lane: medium
+  template:
+    metadata:
+      labels:
+        app: redis-grid
+        lane: medium
+    spec:
+      nodeSelector:
+        lane: medium
+      containers:
+      - name: redis
+        image: your-registry/your-image:latest
+        resources:
+          limits: { memory: "1Gi" }
+        ports: [ { containerPort: 1234 } ]
+---
+# LANE 3: THE HP STREAM (512Mi)
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis-lightweight
+  namespace: your-namespace
+spec:
+  serviceName: "redis-grid"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-grid
+      lane: lightweight
+  template:
+    metadata:
+      labels:
+        app: redis-grid
+        lane: lightweight
+    spec:
+      nodeSelector:
+        lane: lightweight
+      containers:
+      - name: your-value
+        image: your-registry/your-image:latest
+        resources:
+          limits: { memory: "512Mi" }
+        ports: [ { containerPort: 1234 } ]

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-powerhouse
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-heavy
+  template:
+    metadata:
+      labels:
+        app: redis-heavy
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: hardware-tier
+                operator: In
+                values:
+                - powerhouse
+      containers:
+      - name: redis
+        image: your-registry/your-image:latest
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-heavy-service
+spec:
+  selector:
+    app: redis-heavy
+  ports:
+    - port: 1234
+      targetPort: 1234

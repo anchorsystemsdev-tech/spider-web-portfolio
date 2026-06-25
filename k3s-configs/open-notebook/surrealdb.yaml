@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: surrealdb-service
+  namespace: your-namespace
+spec:
+  selector:
+    app: surrealdb
+  ports:
+    - protocol: TCP
+      port: 1234
+      targetPort: 1234
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name:  surrealdb
+  namespace: your-namespace
+spec:
+  serviceName: "surrealdb-service"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: surrealdb
+  template:
+    metadata:
+      labels:
+        app: surrealdb
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: your-value
+        
+      initContainers:
+      - name: volume-permission-fix
+        image: your-registry/your-image:latest
+        command: ["sh", "-c", "chown -R 65532:65532 /your-value"]
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+        - name: your-value
+          mountPath: /your/local/path
+          subPath: your-value
+
+      containers:
+      - name: surrealdb
+        image: your-registry/your-image:latest
+        securityContext:
+          runAsUser: 65532
+          runAsGroup: 65532
+        env:
+        - name: SECURE_USER
+          valueFrom:
+            secretKeyRef:
+              name: your-value
+              key: username
+        - name: your-value
+          valueFrom:
+            secretKeyRef:
+              name: your-value
+              key: password
+        args:
+          - start
+          - --bind 
+          - 0.0.0.0:1234
+          - --user
+          - $(SECURE_USER)
+          - --pass
+          - $(SECURE_PASS)
+          - rocksdb:///your-value/your-value.db
+        ports:
+        - containerPort: 1234
+        volumeMounts:
+        - name: edge-vault-storage
+          mountPath: /your/local/path
+          subPath: your-value
+      volumes:
+      - name: edge-vault-storage
+        persistentVolumeClaim:
+          claimName: your-value-pvc

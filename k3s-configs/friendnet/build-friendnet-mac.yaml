@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: your-value
+  namespace: your-namespace
+spec:
+  template:
+    spec:
+      # Use nodeSelector to ensure this runs on your Mac M1 (the ARM64 node)
+      nodeSelector:
+        kubernetes.io/arch: arm64
+      containers:
+      - name: your-value
+        image: your-registry/your-image:latest
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            set -e
+            apk add --no-cache git make nodejs npm
+            git clone https://github.com/termermc/FriendNet.git /workspace/friendnet
+            cd /workspace/friendnet
+            # Build the web assets using the Node toolchain in the container
+            make webui
+            # Compile for Darwin (macOS) and ARM64 (M1)
+           GOOS=darwin GOARCH=arm64 go build -o friendnet-client friendnet.org/client/cmd/client
+            # Drop the finished binary into the host folder
+            cp friendnet-client /output/
+            echo "Mac Binary Compiled and Moved to Infra Folder."
+        volumeMounts:
+        - name: your-value
+          mountPath: /your/local/path
+      restartPolicy: Never
+      volumes:
+      - name: your-value
+        hostPath:
+          path: /your/local/path/friendnet # Target local folder
+          type: DirectoryOrCreate

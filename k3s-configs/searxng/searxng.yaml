@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: searxng-engine
+  namespace: your-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: searxng-engine
+  template:
+    metadata:
+      labels:
+        app: searxng-engine
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: your-hostname
+      containers:
+        - name: your-value
+          image: your-registry/your-image:latest
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          ports:
+            - containerPort: 1234
+              name: your-value
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: searxng-engine
+  namespace: your-namespace
+spec:
+  selector:
+    app: searxng-engine
+  ports:
+    - protocol: TCP
+      port: 1234
+      targetPort: 1234

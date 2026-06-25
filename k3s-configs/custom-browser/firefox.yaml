@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: your-value
+  namespace: your-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app:  firefox-browser
+  template:
+    metadata:
+      labels:
+        app:  firefox-browser
+    spec:
+      imagePullSecrets:
+        - name: your-value
+      nodeSelector:
+        kubernetes.io/hostname: your-value
+      containers:
+        - name: your-value
+          image: your-registry/your-image:latest
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+          env:
+            - name: your-value
+              value: "your-value"
+            - name: PULSE_SERVER
+              value: "unix: your/local/path/"
+            - name: VNC_RESOLUTION
+              value: "yourxresolution"
+          volumeMounts:
+            - name: host-input-devices
+              mountPath: /your/local/path
+            # --- UDEV MOUNT ADDED HERE ---
+            - name: host-udev-data
+              mountPath: /your/local/path
+              readOnly: true
+            - name: browser-shared-memory
+              mountPath: /your/local/path
+            - name: pulse-socket
+              mountPath: /your/local/path
+            - name: browser-profile-volume
+              mountPath: /your/local/path
+      volumes:
+        - name: your-value
+          hostPath:
+            path: /your/local/path
+            type: Directory
+        # --- UDEV VOLUME ADDED HERE ---
+        - name: host-input-devices
+          hostPath:
+            path: /your/local/path
+            type: Directory
+        - name: browser-shared-memory
+          emptyDir:
+            medium: Memory
+            sizeLimit: 2Gi
+        - name: pulse-socket
+          hostPath:
+            path: /your/local/path
+            type: Socket
+        - name: browser-profile-volume
+          persistentVolumeClaim:
+            claimName: your-value-pvc

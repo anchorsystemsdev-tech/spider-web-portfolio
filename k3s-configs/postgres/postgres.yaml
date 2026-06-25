@@ -1,0 +1,52 @@
+# 1. THE HEART (Postgres 18 - Anchored to Mac 17GB Partition)
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: your-namespace
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      nodeSelector:
+        lane: your-value
+      tolerations:
+      - key: "node-role.kubernetes.io/control-plane"
+        operator: "Exists"
+        effect: "NoSchedule"
+      containers:
+      - name: postgres
+        image: your-registry/your-image:latest
+        env:
+        - name: POSTGRES_USER
+          value: your-value
+        - name: POSTGRES_PASSWORD
+          value: your-value
+        - name: POSTGRES_DB
+          value: your-value
+        volumeMounts:
+        - name: pg-data
+          mountPath: /your/local/path
+      volumes:
+      - name: pg-data
+        hostPath:
+          path: /your/local/path
+          type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: your-namespace
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 1234

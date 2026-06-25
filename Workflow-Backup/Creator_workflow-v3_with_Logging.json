@@ -1,0 +1,885 @@
+{
+  "updatedAt": "2025-01-01T00:00:00.000Z",
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "id": "your-workflow-id-here",
+  "name": "Your Workflow Name",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "your-webhook-path",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "name": "Webhook",
+      "webhookId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+    },
+    {
+      "parameters": {
+        "jsCode": "const yourData = $input.item.json.body;\nreturn {\n  json: yourData\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const yourData = $input.item.json.body;\nreturn {\n  json: yourData\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+      "name": "Format Request Log"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const yourData = $input.item.json.body;\nreturn {\n  json: yourData\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        0
+      ],
+      "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+      "name": "Format Response Log"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1568,
+        0
+      ],
+      "id": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "response_logs",
+          "mode": "list",
+          "cachedResultName": "response_logs"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $json.logEntry.timestamp }}",
+            "type": "={{ $json.logEntry.type }}",
+            "status": "={{ $json.logEntry.status }}",
+            "workflow_id": "={{ $json.logEntry.workflow_id }}",
+            "workflow_name": "={{ $json.logEntry.workflow_name }}",
+            "error": "={{ $json.logEntry.error }}",
+            "full_response": "={{ JSON.stringify($json.logEntry.full_response) }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "workflow_id",
+              "displayName": "workflow_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "workflow_name",
+              "displayName": "workflow_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "error",
+              "displayName": "error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "full_response",
+              "displayName": "full_response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1344,
+        0
+      ],
+      "id": "generic-node-id-placeholder",
+      "name": "Insert rows in a table1",
+      "credentials": {
+        "postgres": {
+          "id": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "request_logs",
+          "mode": "list",
+          "cachedResultName": "request_logs"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "nodes_count": "={{ $json.logEntry.nodes_count }}",
+            "timestamp": "={{ $json.logEntry.timestamp }}",
+            "type": "={{ $json.logEntry.type }}",
+            "workflow_name": "={{ $json.logEntry.workflow_name }}",
+            "request_body": "={{ JSON.stringify($json.logEntry.request_body) }}",
+            "operation": "={{ $json.logEntry.operation }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "operation",
+              "displayName": "operation",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "workflow_name",
+              "displayName": "workflow_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nodes_count",
+              "displayName": "nodes_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "request_body",
+              "displayName": "request_body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        896,
+        0
+      ],
+      "id": "generic-node-id-placeholder",
+      "name": "Insert rows in a table",
+      "credentials": {
+        "postgres": {
+          "id": "ttttttttt-tttt-tttt-tttt-tttttttttttt",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const yourData = $input.item.json.body;\nreturn {\n  json: yourData\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+      "name": "http "
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Format Request Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Request Log": {
+      "main": [
+        [
+          {
+            "node": "http ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response Log": {
+      "main": [
+        [
+          {
+            "node": "Insert rows in a table1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert rows in a table1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert rows in a table": {
+      "main": [
+        [
+          {
+            "node": "Format Response Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "http ": {
+      "main": [
+        [
+          {
+            "node": "Insert rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner",
+    "authors": "Your Name",
+    "name": "Version your-version-id"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+  "activeVersionId": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-01-01T00:00:00.000Z",
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "role": "workflow:owner",
+      "workflowId": "your-workflow-id-here",
+      "projectId": "your-project-id-here"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-02T06:11:30.056Z",
+    "createdAt": "2026-02-02T06:11:25.233Z",
+    "versionId": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+    "workflowId": "your-workflow-id-here",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "your-webhook-path-v3",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+        "name": "Webhook",
+        "webhookId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+      },
+      {
+        "parameters": {
+          "jsCode": "const workflowData = $input.item.json.body;\nreturn {\n  json: workflowData\n};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          224,
+          0
+        ],
+        "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+        "name": "Code in JavaScript"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');\nconst requestBody = $input.item.json;\n\nconst logEntry = {\n  timestamp,\n  type: 'REQUEST',\n  operation: 'create_workflow',\n  workflow_name: requestBody.name || 'unnamed',\n  nodes_count: requestBody.nodes?.length || 0,\n  request_body: requestBody\n};\n\nreturn {\n  json: {\n    ...$input.item.json,  \n    logEntry: logEntry     \n  }\n};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          448,
+          0
+        ],
+        "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+        "name": "Format Request Log"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');\nconst response = $input.item.json;\nconst success = response.id ? true : false;\n\nconst logEntry = {\n  timestamp,\n  type: 'RESPONSE',\n  status: success ? 'SUCCESS' : 'FAILURE',\n  workflow_id: response.id || null,\n  workflow_name: response.name || null,\n  error: response.message || null,\n  full_response: response\n};\n\nreturn {\n  json: {\n    ...$input.item.json,\n    logEntry: logEntry\n  }\n};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1120,
+          0
+        ],
+        "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+        "name": "Format Response Log"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ $json }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1568,
+          0
+        ],
+        "id": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "schema": {
+            "__rl": true,
+            "mode": "list",
+            "value": "public"
+          },
+          "table": {
+            "__rl": true,
+            "value": "response_logs",
+            "mode": "list",
+            "cachedResultName": "response_logs"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "timestamp": "={{ $json.logEntry.timestamp }}",
+              "type": "={{ $json.logEntry.type }}",
+              "status": "={{ $json.logEntry.status }}",
+              "workflow_id": "={{ $json.logEntry.workflow_id }}",
+              "workflow_name": "={{ $json.logEntry.workflow_name }}",
+              "error": "={{ $json.logEntry.error }}",
+              "full_response": "={{ JSON.stringify($json.logEntry.full_response) }}"
+            },
+            "matchingColumns": [
+              "id"
+            ],
+            "schema": [
+              {
+                "id": "id",
+                "displayName": "id",
+                "required": false,
+                "defaultMatch": true,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "timestamp",
+                "displayName": "timestamp",
+                "required": true,
+                "defaultMatch": false,
+                "display": true,
+                "type": "dateTime",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "type",
+                "displayName": "type",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "status",
+                "displayName": "status",
+                "required": true,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "workflow_id",
+                "displayName": "workflow_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "workflow_name",
+                "displayName": "workflow_name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "error",
+                "displayName": "error",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "full_response",
+                "displayName": "full_response",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "object",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "created_at",
+                "displayName": "created_at",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "dateTime",
+                "canBeUsedToMatch": true,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          1344,
+          0
+        ],
+        "id": "generic-node-id-placeholder",
+        "name": "Insert rows in a table1",
+        "credentials": {
+          "postgres": {
+            "id": "pppppppp-pppp-pppp-pppp-pppppppppppp",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "schema": {
+            "__rl": true,
+            "mode": "list",
+            "value": "public"
+          },
+          "table": {
+            "__rl": true,
+            "value": "request_logs",
+            "mode": "list",
+            "cachedResultName": "request_logs"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "nodes_count": "={{ $json.logEntry.nodes_count }}",
+              "timestamp": "={{ $json.logEntry.timestamp }}",
+              "type": "={{ $json.logEntry.type }}",
+              "workflow_name": "={{ $json.logEntry.workflow_name }}",
+              "request_body": "={{ JSON.stringify($json.logEntry.request_body) }}",
+              "operation": "={{ $json.logEntry.operation }}"
+            },
+            "matchingColumns": [
+              "id"
+            ],
+            "schema": [
+              {
+                "id": "id",
+                "displayName": "id",
+                "required": false,
+                "defaultMatch": true,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "timestamp",
+                "displayName": "timestamp",
+                "required": true,
+                "defaultMatch": false,
+                "display": true,
+                "type": "dateTime",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "type",
+                "displayName": "type",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "operation",
+                "displayName": "operation",
+                "required": true,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "workflow_name",
+                "displayName": "workflow_name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "nodes_count",
+                "displayName": "nodes_count",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "request_body",
+                "displayName": "request_body",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "object",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "created_at",
+                "displayName": "created_at",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "dateTime",
+                "canBeUsedToMatch": true,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          896,
+          0
+        ],
+        "id": "generic-node-id-placeholder",
+        "name": "Insert rows in a table",
+        "credentials": {
+          "postgres": {
+            "id": "qqqqqqqqqq-qqqq-qqqq-qqqq-qqqqqqqqqqqq",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const workflowData = $input.item.json.logEntry.request_body;\nconst logEntry = $input.item.json.logEntry;\n\nconst payload = {\n  name: workflowData.name,\n  nodes: workflowData.nodes,\n  connections: {},\n  settings: workflowData.settings || {}\n};\n\nconst response = await this.helpers.httpRequest({\n  method: 'POST',\n  url: 'http://your-host:1234/api/v1/your-endpoint',\n  headers: {\n    'X-N8N-API-KEY': 'your-api-key-here'\n  },\n  body: payload,\n  json: true\n});\n\nreturn [{ \n  json: {\n    success: true,\n    workflowId: response.id,\n    apiResponse: response,\n    logEntry: logEntry  // Added this line to pass through log data\n  }\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          672,
+          0
+        ],
+        "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+        "name": "http "
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "Format Request Log",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Format Request Log": {
+        "main": [
+          [
+            {
+              "node": "http ",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Format Response Log": {
+        "main": [
+          [
+            {
+              "node": "Insert rows in a table1",
+              "type": "main",
+              "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert rows in a table1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert rows in a table": {
+      "main": [
+        [
+          {
+            "node": "Format Response Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "http ": {
+      "main": [
+        [
+          {
+            "node": "Insert rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+    "authors": "Your Name",
+    "name": "Version your-version-id",
+    "description": "",
+    "autosaved": false
+  },
+  "tags": []
+}

@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forgejo
+  namespace: your-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: forgejo
+  template:
+    metadata:
+      labels:
+        app: forgejo
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: your-value
+      securityContext:
+        fsGroup: 1000
+      containers:
+      - name: your-value
+        image: your-registry/your-image:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        # Route UI caching to Redis DB 0
+        - name: FORGEJO__cache__ADAPTER
+          value: redis
+        - name: FORGEJO__cache__HOST
+          value: "redis://redis-grid.your-namespace.svc.cluster.local:1234/0"
+        # Route User Sessions to Redis DB 1
+        - name: FORGEJO__session__PROVIDER
+          value: redis
+        - name: FORGEJO__session__PROVIDER_CONFIG
+          value: "redis://redis-grid.your-namespace.svc.cluster.local:1234/1"
+        # Route Webhook/Task Queues to Redis DB 2
+        - name: FORGEJO__queue__TYPE
+          value: redis
+        - name: FORGEJO__queue__CONN_STR
+          value: "redis://redis-grid.your-namespace.svc.cluster.local:1234/2"
+        ports:
+        - containerPort: 1234
+          name: http
+        - containerPort: 7890
+          name: ssh
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        volumeMounts:
+        - name: vault-storage
+          mountPath: /your/local/path
+      volumes:
+      - name: vault-storage
+        persistentVolumeClaim:
+          claimName: your-value -pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: forgejo-service
+  namespace: your-namespace
+spec:
+  type: NodePort
+  selector:
+    app: forgejo
+  ports:
+  - name: http
+    port: 1234
+    targetPort: 1234
+    nodePort: 1234
+  - name: ssh
+    port: 7890
+    targetPort: 7890
+    nodePort: 7890

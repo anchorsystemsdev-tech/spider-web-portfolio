@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: your-value
+  namespace: your-namespace
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.tls: "true"
+spec:
+  rules:
+  - host: forgejo.your-domain.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: your-value
+            port:
+              number: 1234
+  tls:
+  - hosts:
+    - forgejo.your-domain.nip.io

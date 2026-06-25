@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: localsend-bridge
+  namespace: your-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: localsend-bridge
+  template:
+    metadata:
+      labels:
+        app: localsend-bridge
+    spec:
+      containers:
+      - name: bridge
+        image: your-registry/your-image:latest
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            apt-get update && apt-get install -y wget ca-certificates;
+            
+            # 1. VERIFIED ARCH DETECTION (Pods on ARM Mac = aarch64)
+            ARCH=$(uname -m);
+            echo "CLUSTER NODE ARCHITECTURE: $ARCH"
+            
+            # 2. VERIFIED ASSET NAMES (Using underscores as per v0.5.23)
+            if [ "$ARCH" = "aarch64" ]; then 
+              ASSET="localsnd-linux-aarch64"; 
+            else 
+              ASSET="localsnd-linux-x86_64"; 
+            fi;
+            
+            echo "DOWNLOADING: $ASSET"
+            # Using absolute URL with underscores to prevent 404
+            wget "https://github.com/pepa65/localsnd/releases/download/0.5.23/${ASSET}" -O /usr/local/bin/localsnd;
+            chmod +x /usr/local/bin/localsnd;
+            
+            # 3. VERIFICATION (Fail if holster is empty)
+            if [ ! -s /usr/local/bin/localsnd ]; then echo "FATAL: Download failed"; exit 1; fi
+            echo "MUSCLE ARMED: $(/usr/local/bin/localsnd --version)"
+            
+            pip install flask requests;
+            
+            # 4. DEBUG-ENABLED PYTHON BRIDGE
+            python3 -c "
+            from flask import Flask, request
+            import subprocess, os, sys
+            app = Flask(__name__)
+            
+            @app.route('/beam', methods=['POST'])
+            def beam():
+                # Explicit logging for your debug workflow
+                print(f'FILES RECEIVED: {list(request.files.keys())}', file=sys.stderr)
+                print(f'IP RECEIVED: {request.form.get(\"ip\")}', file=sys.stderr)
+                
+                target_ip = request.form.get('ip')
+                if 'file' not in request.files or not target_ip:
+                    return 'Error: Missing IP or File', 400
+                
+                f = request.files['file']
+                path = f'/tmp/{f.filename}'
+                f.save(path)
+                
+                print(f'DEBUG: Sending {f.filename} to {target_ip}', file=sys.stderr)
+                
+                # Command syntax: localsnd send <ip> <file>
+                cmd = ['/usr/local/bin/localsnd', 'send', target_ip, path]
+                result = subprocess.run(cmd, capture_output=True, text=True)
+                
+                os.remove(path)
+                if result.returncode != 0:
+                    print(f'DEBUG ERROR: {result.stderr}', file=sys.stderr)
+                    return f'LocalSend Error: {result.stderr}', 500
+                
+                return 'Success', 200
+
+            # DEBUG MODE IS ON
+            app.run(host='0.0.0.0', port=5000, debug=True)"

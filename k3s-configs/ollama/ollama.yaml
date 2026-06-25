@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama
+  namespace: your-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ollama
+  template:
+    metadata:
+      labels:
+        app: ollama
+    spec:
+      nodeSelector:
+        lane: your-value
+      containers:
+      - name: ollama
+        image: your-registry/your-image:latest
+        securityContext:
+          privileged: true
+        # Hack to install the Apple-compatible Vulkan drivers on boot
+        command: ["/bin/sh", "-c"]
+        args: ["apt-get update && apt-get install -y mesa-vulkan-drivers && ollama serve"]
+        env:
+        - name: OLLAMA_NUM_PARALLEL
+          value: "1"
+        ports:
+        - containerPort: 1234
+        volumeMounts:
+        - name: your-value
+          mountPath: /your/local/path
+        - name: your-value
+          mountPath: /your/local/path
+      volumes:
+      - name: your-value
+        emptyDir: {}
+      - name: your-value
+        hostPath:
+          path: /your/local/path
+          type: Directory

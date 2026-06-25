@@ -1,0 +1,202 @@
+{
+  "updatedAt": "2025-01-01T00:00:00.000Z",
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "id": "your-workflow-id-here",
+  "name": "Your Workflow Name",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://your-host:1234/api/v1/your-endpoint",
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        704,
+        0
+      ],
+      "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+      "name": "Transfer"
+    },
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"name\": \"Github-Backup\"\n}"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        32,
+        80
+      ],
+      "id": "generic-node-id-placeholder",
+      "name": "Execute Workflow Trigger"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://your-host:1234/api/v1/your-endpoint",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"info\": { \"alias\": \"n8n-bot\", \"version\": \"2.0\" },\n  \"files\": {\n    \"file-1\": {\n      \"id\": \"file-1\",\n      \"fileName\": \"{{ $json.name }}.json\",\n      \"size\": {{ parseInt($binary.data.fileSize) * 1024 }},\n      \"fileType\": \"application/json\",\n      \"sha256\": \"\"\n    }\n  }\n}",
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {}
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        368,
+        48
+      ],
+      "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+      "name": "handshake",
+      "alwaysOutputData": false
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "handshake",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "handshake": {
+      "main": [
+        [
+          {
+            "node": "Transfer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "authors": "Your Name",
+    "name": "Version your-version-id"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+  "activeVersionId": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-01-01T00:00:00.000Z",
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "role": "workflow:owner",
+      "workflowId": "your-workflow-id-here",
+      "projectId": "your-project-id-here"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-04-03T04:54:05.038Z",
+    "createdAt": "2026-04-03T04:31:34.198Z",
+    "versionId": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+    "workflowId": "your-workflow-id-here",
+    "nodes": [
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://your-host:1234/api/your-endpoint/v2/prepare-upload",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"info\": {\n    \"alias\": \"n8n-cluster-bot\",\n    \"version\": \"2.0\",\n    \"deviceModel\": \"n8n-worker\",\n    \"deviceType\": \"server\",\n    \"fingerprint\": \"k3s-automation\",\n    \"download\": true\n  },\n  \"files\": {\n    \"file-1\": {\n      \"id\": \"file-1\",\n      \"fileName\": \"{{ $binary.data.fileName }}\",\n      \"size\": {{ $binary.data.fileSize.includes('kB') ? Math.round(parseFloat($binary.data.fileSize) * 1024) : ($binary.data.fileSize.includes('MB') ? Math.round(parseFloat($binary.data.fileSize) * 1048576) : parseInt($binary.data.fileSize)) }}, \n      \"fileType\": \"{{ $binary.data.mimeType }}\",\n      \"sha256\": \"\" \n    }\n  }\n}",
+          "options": {
+            "allowUnauthorizedCerts": true
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          208,
+          0
+        ],
+        "id": "gggggggg-gggg-gggg-gggg-gggggggggggg",
+        "name": "handshake"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=http://your-host:1234/api/your-endpoint/v2/upload?sessionId={{ $('handshake').item.json.sessionId }}&fileId=file-1&token={{ $('handshake').item.json.files['file-1'] }}",
+          "sendBody": true,
+          "contentType": "binaryData",
+          "inputDataFieldName": "={{ $('Execute Workflow Trigger').item.binary.data }}",
+          "options": {
+            "allowUnauthorizedCerts": true
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          416,
+          0
+        ],
+        "id": "hhhhhhhh-hhhh-hhhh-hhhh-hhhhhhhhhhhh",
+        "name": "Transfer"
+      },
+      {
+        "parameters": {
+          "inputSource": "jsonExample",
+          "jsonExample": "{\n  \"ip\": \"your-endpoint\" ,\n  \"workflow_name\": \"My_Backup\"\n}"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "jjjjjjjj-jjjj-jjjj-jjjj-jjjjjjjjjjjj",
+        "name": "Execute Workflow Trigger"
+      }
+    ],
+    "connections": {
+      "handshake": {
+        "main": [
+          [
+            {
+              "node": "Transfer",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Execute Workflow Trigger": {
+        "main": [
+          [
+            {
+              "node": "handshake",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "your_name",
+    "name": "Version your_version_id",
+    "description": "",
+    "autosaved": false
+  },
+  "tags": []
+}
