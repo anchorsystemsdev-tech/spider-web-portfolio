@@ -1,4 +1,4 @@
-# 🕷️🕸️ Spider-Web Cluster — Infrastructure Portfolio
+# 🕷️🕸️ Spider-Web-Portfolio
  
 A hyper-converged, multi-architecture Kubernetes cluster engineered from consumer hardware. Built to function as a sovereign, self-healing digital ecosystem — running AI inference, containerized workloads, virtual machines, and a fully automated GitOps pipeline across three physically mismatched nodes.
  
