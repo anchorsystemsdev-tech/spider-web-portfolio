@@ -1,6 +1,6 @@
 # Linux Zero-Day Triage Post-Mortem
  
-[![Linux Zero-Day Triage Post -Mortem](https://img.youtube.com/vi/fhhKWqMmgM8/maxresdefault.jpg)](https://www.youtube.com/watch?v=fhhKWqMmgM8)
+[![Linux Zero-Day Triage Post -Mortem](https://img.youtube.com/vi/UG0tT9f3igM/maxresdefault.jpg)](https://www.youtube.com/watch?v=UG0tT9f3igM)
 
 > **Cluster:** spiderweb | **Hardware:** M1 MacBook + HP Stream + Windows Mini PC | **Threat Level:** Critical | **Status:** ✅ Fully Mitigated
  
