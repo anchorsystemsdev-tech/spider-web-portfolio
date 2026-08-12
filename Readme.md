@@ -1,6 +1,6 @@
 # 🕷️🕸️ Spider-Web-Portfolio
 
-**Who I am:** I'm an entry-level IT support professional (CompTIA A+ certified, Per Scholas IT Support Training grad) who wanted more hands-on experience than a classroom or a cert exam could give me. So the week after finishing my training, I built my own home computer lab and spent 2-3 months teaching myself how real systems actually work — by setting them up, breaking them, and fixing them myself.
+**Who I am:** I'm an entry-level IT support professional (CompTIA A+ certified, Per Scholas IT Support Training grad) who wanted more hands-on experience than a classroom or a cert exam could give me. So the week after finishing my training, I built my own home computer lab and spent 2-3 months teaching myself how real systems actually work by setting them up, breaking them, and fixing them myself.
 
 **What I built:** Three old computers (a MacBook, a beat-up HP laptop, and a mini PC) networked together into one system that runs containerized apps, virtual machines, and automated workflows. Below is a plain breakdown of the skills I picked up doing this, followed by the technical details for anyone who wants to see how it actually works.
 
