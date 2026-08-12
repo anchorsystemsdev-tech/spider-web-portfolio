@@ -1,9 +1,25 @@
 # 🕷️🕸️ Spider-Web-Portfolio
- 
-A hyper-converged, multi-architecture Kubernetes cluster engineered from consumer hardware. Built to function as a sovereign, self-healing digital ecosystem — running AI inference, containerized workloads, virtual machines, and a fully automated GitOps pipeline across three physically mismatched nodes.
- 
+
+**Who I am:** I'm an entry-level IT support professional (CompTIA A+ certified, Per Scholas IT Support Training grad) who wanted more hands-on experience than a classroom or a cert exam could give me. So the week after finishing my training, I built my own home computer lab and spent 2-3 months teaching myself how real systems actually work — by setting them up, breaking them, and fixing them myself.
+
+**What I built:** Three old computers (a MacBook, a beat-up HP laptop, and a mini PC) networked together into one system that runs containerized apps, virtual machines, and automated workflows. Below is a plain breakdown of the skills I picked up doing this, followed by the technical details for anyone who wants to see how it actually works.
+
+## Skills I Practiced Here
+
+- **Troubleshooting across different systems** — My three computers all run different operating systems. Getting them to work together meant learning that a fix on one machine often doesn't work on another, and figuring out why.
+- **Diagnosing problems from the ground up** — When something crashed, I didn't just restart it and hope. I read error logs, traced the actual cause, and fixed the root problem.
+- **Applying security patches under pressure** — When a real, publicly disclosed Linux security vulnerability came out (CVE-2026-31431) and affected all three of my machines, each one needed a different fix because each one manages its system differently. Full write-up is in the post-mortems below.
+- **Building backups and automation** — I set up a system that automatically backs up my configuration files and keeps a record of every change, so I never lose work.
+- **Solving problems without help** — No paid tech support to call, no cloud service to fall back on. Everything here got fixed by reading documentation, testing ideas, and trying again when something didn't work.
+
+This repo is the proof: the actual configuration files I wrote, plus first-person write-ups of what broke and how I fixed it.
+
+## Tech Stack
+
+`K3s` `KubeVirt` `CDI` `QEMU` `virtctl` `n8n` `LocalSend` `FriendNet` `Forgejo` `Redis` `PostgreSQL` `SurrealDB` `Ollama` `SearXNG` `Open Notebook` `systemd` `Asahi Linux` `Fedora 43` `Xubuntu` `WSL2` `Docker` `GHCR` `Go` `Python` `Node.js` `Bash` `JavaScript` `npm` `GitHub API` `Google Gemini` `Sway` `Podman` `Alacritty` `Pass` `Starship` `and more...`
+
 ---
- 
+
 ## Hardware
  
 The cluster runs on a strict hardware split across two instruction sets, maximizing resource efficiency across ARM64 and x86_64.
@@ -18,12 +34,12 @@ The cluster runs on a strict hardware split across two instruction sets, maximiz
  
 ## Architecture
  
-### Orchestration Plane
-- **K3s** manages all containerized and virtualized workloads across the heterogeneous node pool
+### Running Containers & Virtual Machines
+- **K3s** (a lightweight version of Kubernetes) manages all containerized apps and virtual machines across all three computers
 - **KubeVirt** runs bare-metal Fedora 43 Virtual Machines as native Kubernetes pods, bypassing macOS's hardware lock on nested virtualization entirely
 - `nodeSelector` and `nodeAffinity` rules pin heavy compute to capable nodes, preventing the HP Stream from being OOM-killed by the scheduler
-### Nervous System — Telemetry & State
-A 3-lane Redis highway handles real-time telemetry and state caching across the cluster:
+### Telemetry & State (Redis)
+A 3-lane Redis setup handles real-time monitoring and state caching across the cluster:
  
 | Lane | Node | Function |
 |---|---|---|
@@ -31,12 +47,12 @@ A 3-lane Redis highway handles real-time telemetry and state caching across the 
 | Medium | Mini PC | Intermediate state caching |
 | Powerhouse | M1 Mac | 2GB RAM dedicated to deep state data and infrastructure logs |
  
-### Data Mesh — Logistics & Transport
+### File Transfer & Sync
 - **LocalSend REST API** — Event-driven "Just-in-Time" data mesh. The n8n control plane fires binary payloads directly across nodes, bypassing the overhead of traditional shared storage
-- **FriendNet** — A decentralized Go-based P2P file-sharing mesh acting as the cluster's subconscious memory. Sidecar clients passively sync logs and datasets across nodes
-### Sovereign Storage Plane
-- **Inside-Out Edge Vault** — A 114GB / 128GB USB 3.0 drive formatted to ext4, mounted directly to the HP Stream worker node. Physically decoupled from internal eMMC storage — survives node failure
-- **Forgejo Vault** — Self-hosted Git server running on the edge vault, storing the cluster's Infrastructure-as-Code DNA: YAML manifests and n8n workflow JSON backups
+- **FriendNet** — A decentralized Go-based P2P file-sharing tool I wrote in Go. Sidecar clients on each node passively sync logs and datasets to each other in the background, so data isn't lost if one node goes down
+### Backup Storage
+- **External USB drive** — A 128GB USB 3.0 drive formatted to ext4, mounted to the HP Stream node. Physically separate from internal storage, so it survives if that node fails
+- **Self-hosted Git server (Forgejo)** — Runs on that external drive, storing all the YAML configs and n8n workflow backups so infrastructure changes are version-controlled, not just live on the cluster
 ---
  
 ## AI Stack
@@ -62,7 +78,7 @@ This public repository is the sanitized output of a private Forgejo instance, pu
  
 ---
  
-## KUBE LOG — Post-Mortems
+## Incident Post-Mortems
 
 [![Watch my project playlist](playlist-cover.png)](https://www.youtube.com/playlist?list=PLB26d8r7J0aFxMoEk_CLmKUPlszka4np-)
  
@@ -158,21 +174,6 @@ The architecture of this repository is organized to provide clear separation of 
 │   ├── Localsend-Beam.md
 │   ├── Research_Agent_Sub-Workflow.json
 │   └── Research_Agent_Sub-Workflow.md
-├── post-mortems/                    # Incident reports
+├── post-mortem/                    # Incident reports
 └── Readme.md                        # Master Portfolio documentation
-
-## Tech Stack
- 
-`K3s` `KubeVirt` `CDI` `QEMU` `virtctl` `n8n` `LocalSend` `FriendNet` `Forgejo` `Redis` `PostgreSQL` `SurrealDB` `Ollama` `SearXNG` `Open Notebook` `systemd` `Asahi Linux` `Fedora 43` `Xubuntu` `WSL2` `Docker` `GHCR` `Go` `Python` `Node.js` `Bash` `JavaScript` `npm` `GitHub API` `Google Gemini` `Sway` `Podman` `Alacritty` `Pass` `Starship` `and more...` 
- 
----
- 
-## Portfolio Value
- 
-The Spider-Web is an elite-grade DevSecOps simulator built under real resource constraints. It demonstrates:
- 
-- **Heterogeneous Distributed Systems** — ARM64 and x86_64 nodes operating as a single unified cluster
-- **Kernel-Level Debugging** — 16K page size alignment, VXLAN packet loss from hardware checksum offloading, cgroup kernel parameter injection
-- **Zero-Day CVE Patching** — Triaged and patched live Linux kernel privilege escalation vulnerabilities across three architecturally incompatible nodes simultaneously, each requiring a distinct remediation strategy
-- **Zero-Trust GitOps** — Trifecta automation loop (Creator → Editor → Backup) managing the cluster's own brain
-- **Hardware Sovereignty** — No cloud dependencies. Full stack runs on recycled consumer hardware with a $15 USB drive as the disaster recovery layer
+```
