@@ -49,7 +49,7 @@ A 3-lane Redis setup handles real-time monitoring and state caching across the c
  
 ### File Transfer & Sync
 - **LocalSend REST API** — Event-driven "Just-in-Time" data mesh. The n8n control plane fires binary payloads directly across nodes, bypassing the overhead of traditional shared storage
-- **FriendNet** — A decentralized Go-based P2P file-sharing tool I wrote in Go. Sidecar clients on each node passively sync logs and datasets to each other in the background, so data isn't lost if one node goes down
+- **FriendNet** — A decentralized Go-based P2P file-sharing tool I integrated into the cluster. Sidecar clients on each node passively sync logs and datasets to each other in the background, so data isn't lost if one node goes down
 ### Backup Storage
 - **External USB drive** — A 128GB USB 3.0 drive formatted to ext4, mounted to the HP Stream node. Physically separate from internal storage, so it survives if that node fails
 - **Self-hosted Git server (Forgejo)** — Runs on that external drive, storing all the YAML configs and n8n workflow backups so infrastructure changes are version-controlled, not just live on the cluster
